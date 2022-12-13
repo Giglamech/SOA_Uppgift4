@@ -1,5 +1,11 @@
 public class Main {
     public static void main(String[] args) {
-        System.out.println("SOA UPPGIFT 4 LETS GOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+
+        //SKAPA GUI SAKER
+
+        //Används för att göra calls till TimeEdit / Canvas
+        WebhookManager webhookManager = new WebhookManager();
+
+
     }
 }
