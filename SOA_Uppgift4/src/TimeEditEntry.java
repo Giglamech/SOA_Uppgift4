@@ -12,4 +12,7 @@ public class TimeEditEntry {
     String zoomLink;
     String teacher;
     String lectionContent;
+
+    public TimeEditEntry(String[] sendRequest) {
+    }
 }

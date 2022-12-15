@@ -12,4 +12,7 @@ public class CanvasCalendarEntry {
     String zoomLink;
     String teacher;
     String lectionContent;
+
+    public CanvasCalendarEntry(String[] sendRequest) {
+    }
 }
