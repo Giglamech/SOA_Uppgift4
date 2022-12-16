@@ -11,47 +11,56 @@ public class WebhookManager {
     String type;
     String requestContent;
 
-    String canvasUrl = "https://www.ltu.infrastructure.com/api/v1/calendar_events.json";
+    String canvasUrl = "https://ltu.instructure.com/api/v1/";
+    String canvasToken = "3755~buPUF77WBixkcXA6X5yfMnnCGOiPwOtPQW4a8Vw2i96ihLZoaWy23wIEZsTXhrL7";
 
-    String canvasToken = "3755~gllzMIPeJKlBJSFLmmAVkQEbPoC77R7KqtDtWzo0eBPt0aP8KsFVm2cGWIHZpmKB";
+    String testUrl = "https://webhook.site/55fe39a4-02dc-4cb0-801d-a156ab01b970";
+
+    String timeEditUrl = "";
     String timeEditToken = "";
-    public String getCanvas(String content) throws IOException {
-        requestContent = content;
-        url = "https://webhook.site/55fe39a4-02dc-4cb0-801d-a156ab01b970"; //Ska vara URL till canvas
+    public String getCanvas(String userId, String endDate) throws IOException {
+        requestContent = "{\"calendar_event\": {\"end_date\":\"" + endDate + "\"}";
+        url = canvasUrl + "users/" + userId + "/calendar_events";
+        url = "https://ltu.instructure.com/api/v1/users/98107/calendar_events";
+        url = testUrl;
         type = "GET";
-        return sendRequest(type, canvasUrl, requestContent, canvasToken);
+        return sendRequest(type, url, requestContent, canvasToken);
     }
 
     public String postCanvas(String content) throws IOException {
         requestContent = content;
-        url = "https://webhook.site/55fe39a4-02dc-4cb0-801d-a156ab01b970"; //Ska vara URL till canvas
+        url = canvasUrl+ "calendar_events";
         type = "POST";
-        return sendRequest(type, canvasUrl, requestContent, canvasToken);
+        return sendRequest(type, url, requestContent, canvasToken);
     }
 
     public String getTimeEdit(String content) throws IOException {
         requestContent = content;
-        url = "https://webhook.site/55fe39a4-02dc-4cb0-801d-a156ab01b970"; //Ska vara URL till timeEdit
+        url = timeEditUrl;
         type = "GET";
         return sendRequest(type, url, requestContent, timeEditToken);
     }
 
-
     public String postTimeEdit(String content) throws IOException {
         requestContent = content;
-        url = "https://webhook.site/55fe39a4-02dc-4cb0-801d-a156ab01b970"; //Ska vara URL till timeEdit
+        url = timeEditUrl;
         type = "POST";
         return sendRequest(type, url, requestContent, timeEditToken);
     }
 
-    private String sendRequest(String requestType, String url, String content, String authorziationToken) throws IOException {
+    private String sendRequest(String requestType, String url, String content, String authorizationToken) throws IOException {
         URL destinationUrl = new URL(url);
         HttpURLConnection connection = (HttpURLConnection)destinationUrl.openConnection();
         connection.setRequestMethod(requestType);
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("Authorization","Bearer <"+authorziationToken+">");
+        connection.setRequestProperty("Authorization", "Bearer " + authorizationToken);
         connection.setDoOutput(true);
+        System.out.println("connection.getRequestMethod() = " + connection.getRequestMethod());
+        System.out.println("DestinationUrl = " + destinationUrl);
+        System.out.println("Content = " + content);
+        System.out.println("Authorizaitontoken = " + authorizationToken);
+        System.out.println("RequestType = " + requestType);
 
         try(OutputStream os = connection.getOutputStream()) {
             byte[] input = content.getBytes("utf-8");
@@ -68,5 +77,4 @@ public class WebhookManager {
         }
         return response.toString();
     }
-
 }
