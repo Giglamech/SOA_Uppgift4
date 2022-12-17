@@ -2,13 +2,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class WebhookManager {
     String url;
-    String type;
     String requestContent;
 
     String canvasUrl = "https://ltu.instructure.com/api/v1/";
@@ -19,54 +17,90 @@ public class WebhookManager {
     String timeEditUrl = "";
     String timeEditToken = "";
     public String getCanvas(String userId, String endDate) throws IOException {
-        requestContent = "{\"calendar_event\": {\"end_date\":\"" + endDate + "\"}";
+        requestContent = "end_date=" + endDate;
         url = canvasUrl + "users/" + userId + "/calendar_events";
-        url = "https://ltu.instructure.com/api/v1/users/98107/calendar_events";
-        url = testUrl;
-        type = "GET";
-        return sendRequest(type, url, requestContent, canvasToken);
+        //url = "https://ltu.instructure.com/api/v1/users/98107/calendar_events";
+        //url = testUrl;
+        return sendGET(url, requestContent, canvasToken);
     }
 
     public String postCanvas(String content) throws IOException {
         requestContent = content;
         url = canvasUrl+ "calendar_events";
-        type = "POST";
-        return sendRequest(type, url, requestContent, canvasToken);
+        return sendPOST(url, requestContent, canvasToken);
     }
 
     public String getTimeEdit(String content) throws IOException {
         requestContent = content;
         url = timeEditUrl;
-        type = "GET";
-        return sendRequest(type, url, requestContent, timeEditToken);
+        return sendGET(url, requestContent, timeEditToken);
     }
 
     public String postTimeEdit(String content) throws IOException {
         requestContent = content;
         url = timeEditUrl;
-        type = "POST";
-        return sendRequest(type, url, requestContent, timeEditToken);
+        return sendPOST(url, requestContent, timeEditToken);
     }
 
-    private String sendRequest(String requestType, String url, String content, String authorizationToken) throws IOException {
-        URL destinationUrl = new URL(url);
-        HttpURLConnection connection = (HttpURLConnection)destinationUrl.openConnection();
-        connection.setRequestMethod(requestType);
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("Authorization", "Bearer " + authorizationToken);
-        connection.setDoOutput(true);
-        System.out.println("connection.getRequestMethod() = " + connection.getRequestMethod());
-        System.out.println("DestinationUrl = " + destinationUrl);
-        System.out.println("Content = " + content);
-        System.out.println("Authorizaitontoken = " + authorizationToken);
-        System.out.println("RequestType = " + requestType);
+    private String sendGET(String url, String query, String authorizationToken) throws IOException {
+
+        String queryUrl = url + "?" + query;
+        HttpURLConnection connection = createConnection(queryUrl, "GET", authorizationToken);
+
+        int responseCode = connection.getResponseCode();
+        System.out.println("GET Response code :: " + responseCode);
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            return readResponse(connection);
+        } else {
+            System.out.println("GET request failed");
+            return null;
+        }
+
+
+    }
+
+    private String sendPOST(String url, String content, String authorizationToken) throws IOException {
+        HttpURLConnection connection = createConnection(url, "POST", authorizationToken);
+
 
         try(OutputStream os = connection.getOutputStream()) {
             byte[] input = content.getBytes("utf-8");
             os.write(input, 0, input.length);
         }
 
+        int responseCode = connection.getResponseCode();
+        System.out.println("POST response code :: " + responseCode);
+
+        if (responseCode == HttpURLConnection.HTTP_CREATED) {
+            return readResponse(connection);
+        } else {
+            System.out.println("POST request failed");
+            return null;
+        }
+
+
+    }
+
+    private HttpURLConnection createConnection(String url, String requestType, String authorizationToken) throws IOException {
+        URL destinationUrl = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection)destinationUrl.openConnection();
+
+        connection.setRequestMethod(requestType);
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setRequestProperty("Authorization", "Bearer " + authorizationToken);
+        connection.setDoOutput(true);
+
+        System.out.println("connection.getRequestMethod() = " + connection.getRequestMethod());
+        System.out.println("DestinationUrl = " + destinationUrl);
+        System.out.println("Authorizaitontoken = " + authorizationToken);
+        System.out.println("RequestType = " + requestType);
+
+        return connection;
+    }
+
+    private String readResponse(HttpURLConnection connection) throws IOException {
         StringBuilder response = new StringBuilder();
         try(BufferedReader br = new BufferedReader(
                 new InputStreamReader(connection.getInputStream(), "utf-8"))) {

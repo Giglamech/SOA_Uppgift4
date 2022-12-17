@@ -8,11 +8,11 @@ public class Main {
         //Används för att göra calls till TimeEdit / Canvas
         WebhookManager webhookManager = new WebhookManager();
 
-        //String jsonInputString = "{\"name\": \"Upendra\", \"job\": \"Programmer\"}";
-        //String canvasTestCreateEventString = "{\"calendar_event\": {\"context_code\":\"user_98107\",\"title\":\"api test\",\"start_at\":\"2022-12-18T10:15:00Z\",\"end_at\":\"2022-12-18T11:45:00Z\"}}";
+        String canvasTestCreateEventString = "{\"calendar_event\": {\"context_code\":\"user_98107\",\"title\":\"api test\",\"start_at\":\"2022-12-18T10:15:00Z\",\"end_at\":\"2022-12-18T11:45:00Z\"}}";
         String userIDBjorn = "98107";
         String endDate = "2023-01-16T16:00:00Z";
         System.out.println(webhookManager.getCanvas(userIDBjorn, endDate));
+        //System.out.println(webhookManager.postCanvas(canvasTestCreateEventString));
     }
 }
 
