@@ -14,13 +14,11 @@ public class WebhookManager {
 
     String testUrl = "https://webhook.site/55fe39a4-02dc-4cb0-801d-a156ab01b970";
 
-    String timeEditUrl = "";
-    String timeEditToken = "";
+    String timeEditUrl = "https://cloud.timeedit.net/ltu/web/schedule1/ri105656X45Z0XQ6Z36g1Y40y3036Y32107gQY6Q547520876YQ837.json";
+
     public String getCanvas(String userId, String endDate) throws IOException {
         requestContent = "end_date=" + endDate;
         url = canvasUrl + "users/" + userId + "/calendar_events";
-        //url = "https://ltu.instructure.com/api/v1/users/98107/calendar_events";
-        //url = testUrl;
         return sendGET(url, requestContent, canvasToken);
     }
 
@@ -31,21 +29,18 @@ public class WebhookManager {
     }
 
     public String getTimeEdit(String content) throws IOException {
-        requestContent = content;
+        requestContent = "";
         url = timeEditUrl;
-        return sendGET(url, requestContent, timeEditToken);
+        return sendGET(url, requestContent, "");
     }
 
-    public String postTimeEdit(String content) throws IOException {
-        requestContent = content;
-        url = timeEditUrl;
-        return sendPOST(url, requestContent, timeEditToken);
-    }
 
     private String sendGET(String url, String query, String authorizationToken) throws IOException {
 
-        String queryUrl = url + "?" + query;
-        HttpURLConnection connection = createConnection(queryUrl, "GET", authorizationToken);
+        if (query != "") {
+            url = url + "?" + query;
+        }
+        HttpURLConnection connection = createConnection(url, "GET", authorizationToken);
 
         int responseCode = connection.getResponseCode();
         System.out.println("GET Response code :: " + responseCode);
@@ -56,13 +51,10 @@ public class WebhookManager {
             System.out.println("GET request failed");
             return null;
         }
-
-
     }
 
     private String sendPOST(String url, String content, String authorizationToken) throws IOException {
         HttpURLConnection connection = createConnection(url, "POST", authorizationToken);
-
 
         try(OutputStream os = connection.getOutputStream()) {
             byte[] input = content.getBytes("utf-8");
@@ -89,7 +81,9 @@ public class WebhookManager {
         connection.setRequestMethod(requestType);
         connection.setRequestProperty("Content-Type", "application/json");
         connection.setRequestProperty("Accept", "application/json");
-        connection.setRequestProperty("Authorization", "Bearer " + authorizationToken);
+        if (authorizationToken != "") {
+            connection.setRequestProperty("Authorization", "Bearer " + authorizationToken);
+        }
         connection.setDoOutput(true);
 
         System.out.println("connection.getRequestMethod() = " + connection.getRequestMethod());
