@@ -1,6 +1,6 @@
-import java.sql.Time;
-import java.util.Date;
-import java.util.Dictionary;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class CalendarEntry {
     //Initiated with data from TimeEdit
@@ -34,15 +34,30 @@ public class CalendarEntry {
         this.teacher = teacher;
     }
 
-    public CalendarEntry(Dictionary<String, String> dict) {
-        this.id = dict.get("id");
-        this.startDate = dict.get("startdate");
-        this.endDate = dict.get("enddate");
-        this.startTime = dict.get("starttime");
-        this.endTime = dict.get("endtime");
-        this.location = dict.get("Plats, Lokal");
-        this.courseCode = dict.get("Kurskod, Kursnamn");
-        this.activityType = dict.get("Aktivitet");
-        this.teacher = dict.get("Lärare, Student");
+    public CalendarEntry(JSONObject content) throws JSONException {
+        JSONArray columns = (JSONArray) content.get("columns");
+
+        this.id = content.get("id").toString();
+        this.startDate = content.get("startdate").toString();
+        this.endDate = content.get("enddate").toString();
+        this.startTime = content.get("starttime").toString();
+        this.endTime = content.get("endtime").toString();
+        this.location = columns.get(2).toString();
+        this.courseCode = columns.get(7).toString();
+        this.activityType = columns.get(1).toString();
+        this.teacher = columns.get(3).toString();
+    }
+
+
+    public void printObject() {
+        System.out.println("ID = " + id);
+        System.out.println("StartDate = " + startDate);
+        System.out.println("EndDate = " + endDate);
+        System.out.println("StartTime = " + startTime);
+        System.out.println("EndTime = " + endTime);
+        System.out.println("Location = " + location);
+        System.out.println("CourseCode = " + courseCode);
+        System.out.println("ActivityType = " + activityType);
+        System.out.println("Teacher = " + teacher);
     }
 }

@@ -1,7 +1,8 @@
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-//import org.json.*;
 
 
 public class Main {
@@ -31,7 +32,36 @@ public class Main {
     }
 
     public static CalendarEntry[] jsonToCalendarEntryList(String jsonContent) {
-        //JSONObject object;
+        try {
+            JSONObject jsonObject = new JSONObject(jsonContent);
+            JSONObject info = (JSONObject) jsonObject.get("info");
+            int reservationCount = Integer.parseInt(info.get("reservationcount").toString());
+            CalendarEntry[] calendarEntries = new CalendarEntry[reservationCount];
+            JSONArray reservations = (JSONArray) jsonObject.get("reservations");
+            System.out.println(reservations);
+
+            System.out.println(1);
+            System.out.println(reservations);
+            System.out.println(2);
+
+            for(int i=0; i <reservations.length(); i++) {
+                System.out.println(reservations.get(i));
+            }
+            System.out.println(3);
+            for(int i=0; i <reservations.length(); i++) {
+                System.out.println(reservations.get(i));
+                CalendarEntry calendarEntry = new CalendarEntry((JSONObject)reservations.get(i));
+                calendarEntry.printObject();
+                System.out.println();
+                System.out.println();
+                System.out.println();
+            }
+
+
+
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
 
         return null;
     }
